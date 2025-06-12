@@ -82,14 +82,13 @@
       <h1 class="form-title">CREATE ACCOUNT</h1>
     </div>
 
-    <form>
-      <input type="text" class="form-control" placeholder="First Name" />
-      <input type="text" class="form-control" placeholder="Last Name" />
-      <input type="email" class="form-control" placeholder="Email" />
-      <input type="password" class="form-control" placeholder="Password" />
-
-      <button type="submit" class="btn btn-continue mt-4">Continue</button>
-    </form>
+  <form method="POST" action="{{ url_for('create_account') }}">
+    <input type="text" name="first_name" class="form-control" placeholder="First Name" />
+    <input type="text" name="last_name" class="form-control" placeholder="Last Name" />
+    <input type="email" name="email" class="form-control" placeholder="Email" />
+    <input type="password" name="password" class="form-control" placeholder="Password" />
+    <button type="submit" class="btn btn-continue mt-4">Continue</button>
+  </form>
   </div>
 
 </body>

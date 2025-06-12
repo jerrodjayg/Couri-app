@@ -127,31 +127,41 @@ def login():
 
 @app.route('/create-account', methods=['GET', 'POST'])
 def create_account():
+    error = None
     if request.method == 'POST':
         first_name = request.form.get('first_name', '').strip()
         last_name = request.form.get('last_name', '').strip()
         email = request.form.get('email', '').lower().strip()
         password = request.form.get('password', '')
 
+        # Check if any field is empty
         if not (first_name and last_name and email and password):
-            return render_template('createaccount.html', error='Please fill out all fields')
+            error = 'Please fill out all fields.'
+            return render_template('createaccount.html', error=error)
 
-        if email in users:
-            return render_template('createaccount.html', error='An account with that email already exists.')
+        # Check if email already exists
+        if User.query.filter_by(email=email).first():
+            error = 'An account with that email already exists.'
+            return render_template('createaccount.html', error=error)
 
-        # Save user
-        users[email] = {
-            'first_name': first_name,
-            'last_name': last_name,
-            'password': password
-        }
-        session['user_email'] = email
-        session['user_first_name'] = first_name
+        # Create and save new user
+        new_user = User(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password  # NOTE: Use hashing in production
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Log in the user
+        session['user_email'] = new_user.email
+        session['user_first_name'] = new_user.first_name
         return redirect(url_for('welcome'))
 
     return render_template('createaccount.html')
 
-@app.route('/welcome')
+@app.route('/Welcome')
 def welcome():
     if 'user_email' not in session:
         return redirect(url_for('homepage'))
